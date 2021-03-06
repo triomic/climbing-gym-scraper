@@ -36,8 +36,8 @@ export default async function boulderPlus(): Promise<Session[]> {
     params: {
       a: 'fcfeed',
       widget_guid: 'f33c8b7f0916487d9af58088967aa62d',
-      start: '1612108800',
-      end: '1615737600',
+      start: moment().unix().toString(),
+      end: moment().add(1, 'week').unix().toString(),
     },
   });
 
