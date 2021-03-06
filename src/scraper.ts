@@ -1,48 +1,31 @@
 import 'ts-polyfill/lib/es2019-array';
 
 import puppeteer, { Browser } from 'puppeteer';
-import blackball from './sources/boba/blackball';
-import eachACup from './sources/boba/each-a-cup';
-import koi from './sources/boba/koi';
-import liho from './sources/boba/liho';
-
-import { Boba } from './sources/boba/model';
 
 import * as Sentry from '@sentry/node';
 import { readStore, writeStore } from './output';
-import chicha from './sources/boba/chicha';
-import tigersugar from './sources/boba/tiger-sugar';
-import playmade from './sources/boba/playmade';
 
 import fs from 'fs';
+
+import type { Session } from './models/session';
+import boulderPlus from './sources/sessions/boulder-plus';
 
 const { NODE_ENV, SENTRY_DSN } = process.env;
 
 const isProduction = NODE_ENV === 'production';
 
-async function boba(browser: Browser) {
-  async function tempFunc(
-    chainName: string,
-    workFunc: (browser: Browser) => Promise<Boba[]>
-  ) {
+async function sessions(browser: Browser) {
+  async function tempFunc(workFunc: (browser: Browser) => Promise<Session[]>) {
     const data = await workFunc(browser);
 
-    const store = readStore('boba.json');
-    writeStore('boba.json', {
+    const store = readStore('sessions.json');
+    writeStore('sessions.json', {
       ...store,
-      [chainName]: data,
+      data: store.data ? [...store.data, ...data] : data,
     });
   }
 
-  await Promise.all([
-    tempFunc('BlackBall', blackball),
-    tempFunc('Each-A-Cup', eachACup),
-    tempFunc('Koi', koi),
-    tempFunc('LiHO', liho),
-    tempFunc('ChiCha', chicha),
-    tempFunc('Tiger Sugar', tigersugar),
-    tempFunc('Playmade', playmade),
-  ]);
+  await Promise.all([tempFunc(boulderPlus)]);
 }
 
 async function scrape() {
@@ -57,7 +40,7 @@ async function scrape() {
       : undefined,
   });
 
-  await boba(browser);
+  await sessions(browser);
 
   await browser.close();
 }
@@ -71,10 +54,7 @@ async function main() {
 
   try {
     fs.mkdirSync('traces');
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
+  } catch (err) {}
 
   try {
     await scrape();
