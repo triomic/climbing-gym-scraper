@@ -20,16 +20,6 @@ const { NODE_ENV, SENTRY_DSN } = process.env;
 
 const isProduction = NODE_ENV === 'production';
 
-if (SENTRY_DSN) {
-  Sentry.init({
-    dsn: SENTRY_DSN,
-  });
-}
-
-try {
-  fs.mkdirSync('traces');
-} catch (e) {}
-
 async function boba(browser: Browser) {
   async function tempFunc(
     chainName: string,
@@ -55,7 +45,7 @@ async function boba(browser: Browser) {
   ]);
 }
 
-async function scraper() {
+async function scrape() {
   const isARMMac = process.arch === 'arm64' && process.platform === 'darwin';
 
   const browser = await puppeteer.launch({
@@ -72,10 +62,27 @@ async function scraper() {
   await browser.close();
 }
 
-scraper()
-  .then(() => process.exit(0))
-  .catch((e) => {
-    console.error(e);
-    Sentry?.captureException(e);
+async function main() {
+  if (SENTRY_DSN) {
+    Sentry.init({
+      dsn: SENTRY_DSN,
+    });
+  }
+
+  try {
+    fs.mkdirSync('traces');
+  } catch (err) {
+    console.error(err);
     process.exit(1);
-  });
+  }
+
+  try {
+    await scrape();
+  } catch (err) {
+    console.error(err);
+    Sentry?.captureException(err);
+    process.exit(1);
+  }
+}
+
+main();
