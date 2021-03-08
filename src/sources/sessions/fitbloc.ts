@@ -1,6 +1,7 @@
 import { Browser } from 'puppeteer';
-import { Session } from '../../models/session';
 import moment from 'moment';
+
+import type { Session } from '../../models/session';
 
 export default async function fitbloc(browser: Browser): Promise<Session[]> {
   const page = await browser.newPage();
