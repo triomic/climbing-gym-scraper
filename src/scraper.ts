@@ -9,6 +9,7 @@ import fs from 'fs';
 
 import type { Session } from './models/session';
 import boulderPlus from './sources/sessions/boulder-plus';
+import fitbloc from './sources/sessions/fitbloc';
 
 const { NODE_ENV, SENTRY_DSN } = process.env;
 
@@ -25,7 +26,7 @@ async function sessions(browser: Browser) {
     });
   }
 
-  await Promise.all([tempFunc(boulderPlus)]);
+  await Promise.all([tempFunc(boulderPlus), tempFunc(fitbloc)]);
 }
 
 async function scrape() {
