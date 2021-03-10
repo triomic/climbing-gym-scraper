@@ -14,6 +14,7 @@ import boulderWorld from './sources/sessions/boulder-world';
 import fitbloc from './sources/sessions/fitbloc';
 import bff from './sources/sessions/bff';
 import oyeyo from './sources/sessions/oyeyo';
+import lighthouse from './sources/sessions/lighthouse';
 
 const { NODE_ENV, SENTRY_DSN } = process.env;
 
@@ -33,7 +34,9 @@ async function sessions(browser: Browser) {
   }
 
   await Promise.all(
-    [boulderPlus, boulderWorld, fitbloc, bff, oyeyo, zVertigo].map(tempFunc)
+    [boulderPlus, boulderWorld, fitbloc, bff, oyeyo, zVertigo, lighthouse].map(
+      tempFunc
+    )
   );
 }
 
