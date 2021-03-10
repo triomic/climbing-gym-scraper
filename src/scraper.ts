@@ -9,6 +9,7 @@ import fs from 'fs';
 
 import type { Session } from './models/session';
 import boulderPlus from './sources/sessions/boulder-plus';
+import boulderWorld from './sources/sessions/boulder-world';
 import fitbloc from './sources/sessions/fitbloc';
 import bff from './sources/sessions/bff';
 import oyeyo from './sources/sessions/oyeyo';
@@ -18,6 +19,8 @@ const { NODE_ENV, SENTRY_DSN } = process.env;
 const isProduction = NODE_ENV === 'production';
 
 async function sessions(browser: Browser) {
+  writeStore('sessions.json', {});
+
   async function tempFunc(workFunc: (browser: Browser) => Promise<Session[]>) {
     const data = await workFunc(browser);
 
@@ -28,7 +31,9 @@ async function sessions(browser: Browser) {
     });
   }
 
-  await Promise.all([boulderPlus, fitbloc, bff, oyeyo].map(tempFunc));
+  await Promise.all(
+    [boulderPlus, boulderWorld, fitbloc, bff, oyeyo].map(tempFunc)
+  );
 }
 
 async function scrape() {
