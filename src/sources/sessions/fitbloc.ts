@@ -19,19 +19,19 @@ export default async function fitbloc(browser: Browser): Promise<Session[]> {
       const waitlistElem = sessionElem.querySelector('.hc_waitlist');
       const slotsElem = sessionElem.querySelector('.hc_availability');
 
-      let slots = 0;
+      let spaces = 0;
       if (!waitlistElem) {
         if (!slotsElem) {
           continue;
         }
-        slots = parseInt(slotsElem.textContent.trim().slice(0, 2), 10);
+        spaces = parseInt(slotsElem.textContent.trim().slice(0, 2), 10);
       }
 
       sessions.push({
         gym: 'Fit Bloc',
         start: startTimeElem.getAttribute('datetime'),
         end: endTimeElem.getAttribute('datetime'),
-        slots,
+        spaces,
       });
     }
 
