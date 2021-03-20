@@ -16,13 +16,13 @@ async function processSlot(slot, subMetadata, isWeekend): Promise<Session> {
   }
   const end = endMoment.toDate();
 
-  const slots = subMetadata[slot].split('/').map((comp) => comp.trim())[0];
+  const spaces = subMetadata[slot].split('/').map((comp) => comp.trim())[0];
 
   return {
     gym: 'Boulder World',
     start,
     end,
-    slots,
+    spaces,
   };
 }
 

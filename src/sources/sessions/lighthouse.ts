@@ -13,10 +13,8 @@ export default async function lighthouse(): Promise<Session[]> {
     gym: 'Lighthouse',
     start: moment(session.event_datetime, 'YYYY-MM-DD HH:mm:ss').toDate(),
     end: moment(session.end_datetime, 'YYYY-MM-DD HH:mm:ss').toDate(),
-    slots: session.max_attendance - session.registration_count,
+    spaces: session.max_attendance - session.registration_count,
   }));
-
-  console.log(sessions);
 
   return sessions;
 }

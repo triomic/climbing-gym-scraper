@@ -14,20 +14,20 @@ async function processSession(session: BoulderPlusSession): Promise<Session> {
   const end = moment(session.end).toDate();
 
   const spacesMatches = /(\d+) spaces/.exec(session.title);
-  let slots;
+  let spaces;
   if (!spacesMatches) {
     // No matches because slot is "Full".
     // Should verify this in the future.
-    slots = 0;
+    spaces = 0;
   } else {
-    slots = parseInt(spacesMatches[1], 10);
+    spaces = parseInt(spacesMatches[1], 10);
   }
 
   return {
     gym: 'boulder+',
     start,
     end,
-    slots,
+    spaces,
   };
 }
 
