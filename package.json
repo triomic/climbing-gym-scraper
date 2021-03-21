@@ -21,6 +21,7 @@
     "form-data": "^4.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
     "pg": "^8.0.2",
     "pg-hstore": "^2.3.3",
     "puppeteer": "^2.0.0",

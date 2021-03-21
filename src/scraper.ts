@@ -6,6 +6,9 @@ import * as Sentry from '@sentry/node';
 import { readStore, writeStore } from './output';
 
 import fs from 'fs';
+import moment from 'moment';
+
+moment.tz.setDefault('Asia/Singapore');
 
 import type { Session } from './models/session';
 import boulderPlus from './sources/sessions/boulder-plus';
