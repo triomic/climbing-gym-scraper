@@ -25,8 +25,12 @@ export default async function lighthouse(): Promise<Session[]> {
 
   const sessions = res.data.response.data.items.map((session) => ({
     gym: 'Lighthouse',
-    start: moment(session.event_datetime, 'YYYY-MM-DD HH:mm:ss').toDate(),
-    end: moment(session.end_datetime, 'YYYY-MM-DD HH:mm:ss').toDate(),
+    start: moment(session.event_datetime, 'YYYY-MM-DD HH:mm:ss')
+      .subtract(8, 'hours')
+      .toDate(),
+    end: moment(session.end_datetime, 'YYYY-MM-DD HH:mm:ss')
+      .subtract(8, 'hours')
+      .toDate(),
     spaces: session.max_attendance - session.registration_count,
   }));
 
