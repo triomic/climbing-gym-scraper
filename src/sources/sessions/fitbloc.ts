@@ -14,10 +14,15 @@ export default async function fitbloc(browser: Browser): Promise<Session[]> {
 
     const sessionElems = document.querySelectorAll('.bw-session');
     for (const sessionElem of sessionElems) {
+      const nameElem = sessionElem.querySelector('.bw-session__name');
       const startTimeElem = sessionElem.querySelector('.hc_starttime');
       const endTimeElem = sessionElem.querySelector('.hc_endtime');
       const waitlistElem = sessionElem.querySelector('.hc_waitlist');
       const slotsElem = sessionElem.querySelector('.hc_availability');
+
+      if (!nameElem.textContent.includes('Gym Entry')) {
+        continue;
+      }
 
       let spaces = 0;
       if (!waitlistElem) {
