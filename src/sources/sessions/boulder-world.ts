@@ -16,7 +16,10 @@ async function processSlot(slot, subMetadata, isWeekend): Promise<Session> {
   }
   const end = endMoment.toDate();
 
-  const spaces = subMetadata[slot].split('/').map((comp) => comp.trim())[0];
+  const spaces =
+    subMetadata[slot] !== undefined
+      ? subMetadata[slot].split('/').map((comp) => comp.trim())[0]
+      : '0';
 
   return {
     gym: 'Boulder World',
