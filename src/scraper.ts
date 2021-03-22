@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/node';
 import { readStore, writeStore } from './output';
 
 import fs from 'fs';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 moment.tz.setDefault('Asia/Singapore');
 
