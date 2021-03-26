@@ -9,7 +9,10 @@ async function processSlot(slot, subMetadata): Promise<Session> {
   const start = moment(dateString, 'YYYYMMDDkkmm').toDate();
   const end = moment(dateString, 'YYYYMMDDkkmm').add(2, 'hours').toDate(); // TODO: don't assume oyeyo time slot length
 
-  const spaces = subMetadata[slot].split('/').map((comp) => comp.trim())[0];
+  const spaces =
+    subMetadata[slot] !== undefined
+      ? subMetadata[slot].split('/').map((comp) => comp.trim())[0]
+      : '0';
 
   return {
     gym: 'Oyeyo',

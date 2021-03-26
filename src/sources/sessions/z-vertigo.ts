@@ -12,7 +12,10 @@ async function processSlot(slot, subMetadata): Promise<Session> {
     .add(30, 'minutes')
     .toDate(); // TODO: don't assume z-vertigo time slot length
 
-  const spaces = subMetadata[slot].split('/').map((comp) => comp.trim())[0];
+  const spaces =
+    subMetadata[slot] !== undefined
+      ? subMetadata[slot].split('/').map((comp) => comp.trim())[0]
+      : '0';
 
   return {
     gym: 'Z-Vertigo',
