@@ -50,6 +50,11 @@ async function processClass(klass, isWeekend): Promise<Session[]> {
     }
   );
 
+  if (!res.data.response) {
+    console.warn(`Boulder World: Could not fetch slots for class ${klass}`);
+    return [];
+  }
+
   const slots = await Promise.all<Session>(
     res.data.data.map((slot) =>
       processSlot(slot, res.data.subMetadata, isWeekend)
@@ -60,10 +65,19 @@ async function processClass(klass, isWeekend): Promise<Session[]> {
 }
 
 export default async function boulderWorld(): Promise<Session[]> {
-  const classes = await Promise.all([
-    processClass('2be7247c-4c08-42c5-beb4-1678c449d108', true),
-    processClass('6a9c21f1-7d99-40c8-9369-642088d7063f', false),
-  ]);
+  const res = await axios.get(
+    'https://www.picktime.com/book/getClassesForCurrentLocation',
+    {
+      params: {
+        locationId: 'ca204f51-922f-42e3-bdb6-1f8373eb5268',
+        accountKey: '566fe29b-2e46-4a73-ad85-c16bfc64b34b',
+      },
+    }
+  );
+
+  const classes = await Promise.all<Session[][]>(
+    res.data.data.map(processClass)
+  );
 
   return flattenDeep(classes);
 }

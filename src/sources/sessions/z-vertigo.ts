@@ -45,6 +45,11 @@ async function processClass(klass) {
     }
   );
 
+  if (!res.data.response) {
+    console.warn(`Z-Vertigo: Could not fetch slots for class ${klass}`);
+    return [];
+  }
+
   const slots = await Promise.all(
     res.data.data.map((slot) => processSlot(slot, res.data.subMetadata))
   );
