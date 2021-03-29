@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
-import { flattenDeep } from 'lodash';
+import { first, flattenDeep } from 'lodash';
 
 import type { Session } from '../../models/session';
 
@@ -25,8 +25,24 @@ async function processSlot(slot, subMetadata): Promise<Session> {
   };
 }
 
+async function getFirstDateOfClass(klass): Promise<string> {
+  const res = await axios.get(
+    'https://www.picktime.com/book/get1stDateForCurrentClass',
+    {
+      params: {
+        locationId: 'e0fa32c9-effa-4e57-9a2c-eb4d95e8d23a',
+        accountKey: '54130796-0b57-47b6-b2f5-276d79f08409',
+        serviceKeys: klass,
+      },
+    }
+  );
+
+  return Object.values(res.data.metadata)[0] as string;
+}
+
 async function processClass(klass) {
-  const date = new Date(),
+  const firstDateOfClass = await getFirstDateOfClass(klass);
+  const date = moment(firstDateOfClass, 'YYYYMMDD').toDate(),
     y = date.getFullYear(),
     m = date.getMonth();
   const lastDayOfMonth = new Date(y, m + 1, 0);

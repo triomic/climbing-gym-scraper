@@ -29,17 +29,32 @@ async function processSlot(slot, subMetadata, isWeekend): Promise<Session> {
   };
 }
 
+async function getFirstDateOfClass(klass): Promise<string> {
+  const res = await axios.get(
+    'https://www.picktime.com/book/get1stDateForCurrentClass',
+    {
+      params: {
+        locationId: 'ca204f51-922f-42e3-bdb6-1f8373eb5268',
+        accountKey: '566fe29b-2e46-4a73-ad85-c16bfc64b34b',
+        serviceKeys: klass,
+      },
+    }
+  );
+
+  return Object.values(res.data.metadata)[0] as string;
+}
+
 async function processClass(klass, isWeekend): Promise<Session[]> {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth();
+  const firstDateOfClass = await getFirstDateOfClass(klass);
+  const date = moment(firstDateOfClass, 'YYYYMMDD').toDate(),
+    year = date.getFullYear(),
+    month = date.getMonth();
   const lastDayOfMonth = new Date(year, month + 1, 0);
 
   const res = await axios.get(
     'https://www.picktime.com/book/getClassAppSlots',
     {
       params: {
-        _: '1614754760505',
         locationId: 'ca204f51-922f-42e3-bdb6-1f8373eb5268',
         accountKey: '566fe29b-2e46-4a73-ad85-c16bfc64b34b',
         serviceKeys: klass,
