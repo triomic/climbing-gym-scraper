@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
-import { flattenDeep } from 'lodash';
+import { flatten, flattenDeep } from 'lodash';
 
 import type { Session } from '../../models/session';
 
@@ -22,26 +22,63 @@ async function processSlot(slot, subMetadata): Promise<Session> {
   };
 }
 
-async function processStaff(klass, staff): Promise<Session[]> {
+async function getFirstDateOfClass(klass): Promise<string> {
   const res = await axios.get(
-    'https://www.picktime.com/book/getClassAppSlots',
+    'https://www.picktime.com/book/get1stDateForCurrentClass',
     {
       params: {
         locationId: '07e26051-689f-471c-8201-bf03796a6a04',
         accountKey: '5176b721-0be8-447e-b43b-3652af54bd7b',
         serviceKeys: klass,
-        staffKeys: staff,
-        endDateAndTime: '202103312359', // TODO: get1stDate n stuff
-        v2: true,
       },
     }
   );
 
-  const slots = await Promise.all<Session>(
-    res.data.data.map(async (slot) => processSlot(slot, res.data.subMetadata))
+  return Object.values(res.data.metadata)[0] as string;
+}
+
+async function processStaff(klass, staff): Promise<Session[]> {
+  const firstDateOfClass = await getFirstDateOfClass(klass);
+  const date = moment(firstDateOfClass, 'YYYYMMDD').toDate(),
+    year = date.getFullYear(),
+    month = date.getMonth();
+  const lastDayOfMonth = new Date(year, month + 2, 0); // 2 months into future just to be sure ;)
+  const lastDayOfNextMonth = new Date(year, month + 2, 0); // 2 months into future just to be sure ;)
+
+  const results = await Promise.all([
+    axios.get('https://www.picktime.com/book/getClassAppSlots', {
+      params: {
+        locationId: '07e26051-689f-471c-8201-bf03796a6a04',
+        accountKey: '5176b721-0be8-447e-b43b-3652af54bd7b',
+        serviceKeys: klass,
+        staffKeys: staff,
+        endDateAndTime: moment(lastDayOfMonth).format('YYYYMMDD') + '2359',
+        v2: true,
+      },
+    }),
+    axios.get('https://www.picktime.com/book/getClassAppSlots', {
+      params: {
+        locationId: '07e26051-689f-471c-8201-bf03796a6a04',
+        accountKey: '5176b721-0be8-447e-b43b-3652af54bd7b',
+        serviceKeys: klass,
+        staffKeys: staff,
+        endDateAndTime: moment(lastDayOfNextMonth).format('YYYYMMDD') + '2359',
+        v2: true,
+      },
+    }),
+  ]);
+
+  const slots = await Promise.all(
+    results.map((res) =>
+      Promise.all<Session>(
+        res.data.data.map(async (slot) =>
+          processSlot(slot, res.data.subMetadata)
+        )
+      )
+    )
   );
 
-  return slots;
+  return flatten(slots);
 }
 
 async function processClass(klass): Promise<Session[][]> {
