@@ -42,21 +42,11 @@ async function processStaff(klass, staff): Promise<Session[]> {
   const date = moment(firstDateOfClass, 'YYYYMMDD').toDate(),
     year = date.getFullYear(),
     month = date.getMonth();
-  const lastDayOfMonth = new Date(year, month + 2, 0); // 2 months into future just to be sure ;)
   const lastDayOfNextMonth = new Date(year, month + 2, 0); // 2 months into future just to be sure ;)
 
-  const results = await Promise.all([
-    axios.get('https://www.picktime.com/book/getClassAppSlots', {
-      params: {
-        locationId: '07e26051-689f-471c-8201-bf03796a6a04',
-        accountKey: '5176b721-0be8-447e-b43b-3652af54bd7b',
-        serviceKeys: klass,
-        staffKeys: staff,
-        endDateAndTime: moment(lastDayOfMonth).format('YYYYMMDD') + '2359',
-        v2: true,
-      },
-    }),
-    axios.get('https://www.picktime.com/book/getClassAppSlots', {
+  const res = await axios.get(
+    'https://www.picktime.com/book/getClassAppSlots',
+    {
       params: {
         locationId: '07e26051-689f-471c-8201-bf03796a6a04',
         accountKey: '5176b721-0be8-447e-b43b-3652af54bd7b',
@@ -65,20 +55,14 @@ async function processStaff(klass, staff): Promise<Session[]> {
         endDateAndTime: moment(lastDayOfNextMonth).format('YYYYMMDD') + '2359',
         v2: true,
       },
-    }),
-  ]);
-
-  const slots = await Promise.all(
-    results.map((res) =>
-      Promise.all<Session>(
-        res.data.data.map(async (slot) =>
-          processSlot(slot, res.data.subMetadata)
-        )
-      )
-    )
+    }
   );
 
-  return flatten(slots);
+  const slots = Promise.all<Session>(
+    res.data.data.map(async (slot) => processSlot(slot, res.data.subMetadata))
+  );
+
+  return slots;
 }
 
 async function processClass(klass): Promise<Session[][]> {
