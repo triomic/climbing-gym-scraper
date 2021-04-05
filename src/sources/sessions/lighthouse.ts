@@ -23,16 +23,14 @@ export default async function lighthouse(): Promise<Session[]> {
     },
   });
 
-  const sessions = res.data.response.data.items.map((session) => ({
-    gym: 'Lighthouse',
-    start: moment(session.event_datetime, 'YYYY-MM-DD HH:mm:ss')
-      .subtract(8, 'hours')
-      .toDate(),
-    end: moment(session.end_datetime, 'YYYY-MM-DD HH:mm:ss')
-      .subtract(8, 'hours')
-      .toDate(),
-    spaces: session.max_attendance - session.registration_count,
-  }));
+  const sessions = res.data.response.data.items
+    .filter((session) => session.title === 'Gym entry')
+    .map((session) => ({
+      gym: 'Lighthouse',
+      start: moment(session.fs_event_datetime, 'YYYY-MM-DD HH:mm:ss').toDate(),
+      end: moment(session.fs_end_datetime, 'YYYY-MM-DD HH:mm:ss').toDate(),
+      spaces: session.max_attendance - session.registration_count,
+    }));
 
   return sessions;
 }
