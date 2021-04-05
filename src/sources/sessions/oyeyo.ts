@@ -42,7 +42,7 @@ async function processStaff(klass, staff): Promise<Session[]> {
   const date = moment(firstDateOfClass, 'YYYYMMDD').toDate(),
     year = date.getFullYear(),
     month = date.getMonth();
-  const lastDayOfNextMonth = new Date(year, month + 2, 0); // 2 months into future just to be sure ;)
+  const lastDayOfNextMonth = new Date(year, month + 1, 0);
 
   const res = await axios.get(
     'https://www.picktime.com/book/getClassAppSlots',
