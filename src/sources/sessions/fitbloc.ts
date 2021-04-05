@@ -20,6 +20,10 @@ export default async function fitbloc(browser: Browser): Promise<Session[]> {
       const waitlistElem = sessionElem.querySelector('.hc_waitlist');
       const slotsElem = sessionElem.querySelector('.hc_availability');
 
+      if (!nameElem) {
+        continue;
+      }
+
       if (!nameElem.textContent.includes('Gym Entry')) {
         continue;
       }
