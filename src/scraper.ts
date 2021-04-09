@@ -41,6 +41,12 @@ async function sessions(browser: Browser) {
       tempFunc
     )
   );
+
+  const store = readStore('sessions.json');
+  writeStore('sessions.json', {
+    ...store,
+    last_updated: new Date(),
+  });
 }
 
 async function scrape() {

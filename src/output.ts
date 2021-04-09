@@ -1,4 +1,5 @@
 import fs from 'fs';
+import moment from 'moment';
 
 import path from 'path';
 
@@ -10,6 +11,7 @@ try {
 
 interface Store<T> {
   data?: T[];
+  last_updated?: Date;
 }
 
 export function readStore<T>(fileName: string): Store<T> {
@@ -21,7 +23,9 @@ export function readStore<T>(fileName: string): Store<T> {
     encoding: 'utf-8',
   });
 
-  return JSON.parse(data) as Store<T>;
+  const store = JSON.parse(data);
+  store.last_updated = moment(store.last_updated).toDate();
+  return store as Store<T>;
 }
 
 export function writeStore<T>(fileName: string, data: Store<T>): void {
